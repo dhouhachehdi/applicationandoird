@@ -1,0 +1,56 @@
+package com.example.dhouha.covoiturage;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.ListView;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+public class DisplayListView extends AppCompatActivity {
+    ListView listView;
+    JSONArray jsonArray;
+    JSONObject jsonObject;
+    String json_string;
+    offrescovoituragesAdapter offrecovoiturageAdapter;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.display_listview_layout);
+        json_string = getIntent().getExtras().getString("json_data");
+        listView = (ListView)findViewById(R.id.listView);
+        offrecovoiturageAdapter = new offrescovoituragesAdapter(this,R.layout.row_layout);
+        listView.setAdapter(offrecovoiturageAdapter);
+
+        try {
+            jsonObject = new JSONObject(json_string);
+            int count = 0;
+            String annonceur;
+            String description;
+            String nombreplace;
+            String heure;
+            String date_publication;
+            String depart;
+            String arrive;
+
+            jsonArray = jsonObject.getJSONArray("server_response");
+            while (count<jsonArray.length()){
+                JSONObject JO = jsonArray.getJSONObject(count);
+                annonceur = JO.getString("annonceur");
+                description = JO.getString("description");
+                nombreplace = JO.getString("nombreplace");
+                heure = JO.getString("heure");
+                date_publication = JO.getString("date_publication");
+                depart = JO.getString("depart");
+                arrive = JO.getString("arrive");
+                offrescovoiturages offrecovoiturage = new offrescovoiturages(annonceur,description,nombreplace,heure,date_publication,depart,arrive);
+                offrecovoiturageAdapter.add(offrecovoiturage);
+                count++;
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
